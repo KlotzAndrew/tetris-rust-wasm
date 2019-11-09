@@ -1,0 +1,21 @@
+<html>
+  <head>
+    <meta content="text/html;charset=utf-8" http-equiv="Content-Type"/>
+  </head>
+  <body>
+    <script type="module">
+      import init, { add } from './pkg/rust_wasm_add.js';
+
+      async function run() {
+        await init();
+
+        const result = add(1, 2);
+        console.log(`1 + 2 = ${result}`);
+        if (result !== 3)
+          throw new Error("wasm addition doesn't work!");
+      }
+      run();
+
+    </script>
+  </body>
+</html>
