@@ -1,5 +1,5 @@
 [package]
-name = "rust-wasm-add"
+name = "tetris-rust-wasm"
 version = "0.1.0"
 authors = ["Andrew Klotz <agc.klotz@gmail.com>"]
 edition = "2018"
