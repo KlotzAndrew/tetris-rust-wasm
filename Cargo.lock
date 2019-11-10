@@ -128,6 +128,7 @@ dependencies = [
 name = "tetris-rust-wasm"
 version = "0.1.0"
 dependencies = [
+ "js-sys 0.3.31 (registry+https://github.com/rust-lang/crates.io-index)",
  "wasm-bindgen 0.2.54 (registry+https://github.com/rust-lang/crates.io-index)",
  "wasm-bindgen-test 0.2.50 (registry+https://github.com/rust-lang/crates.io-index)",
  "web-sys 0.3.31 (registry+https://github.com/rust-lang/crates.io-index)",
