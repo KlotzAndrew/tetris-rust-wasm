@@ -7,20 +7,6 @@ use web_sys::{CanvasRenderingContext2d, FocusEvent, HtmlCanvasElement, KeyboardE
 use std::cell::RefCell;
 use std::rc::Rc;
 
-#[wasm_bindgen(start)]
-pub fn main() -> Result<(), JsValue> {
-  let window = web_sys::window().expect("no global `window` exists");
-  let document = window.document().expect("should have a document on window");
-  let body = document.body().expect("document should have a body");
-
-  let val = document.create_element("p")?;
-  val.set_inner_html("Hello from Rust zz!");
-
-  body.append_child(&val)?;
-
-  Ok(())
-}
-
 #[wasm_bindgen]
 extern {
   fn alert(s: &str);
@@ -28,22 +14,15 @@ extern {
 
 #[wasm_bindgen]
 extern "C" {
-    // Use `js_namespace` here to bind `console.log(..)` instead of just
-    // `log(..)`
     #[wasm_bindgen(js_namespace = console)]
     fn log(s: &str);
 
-    // The `console.log` is quite polymorphic, so we can bind it with multiple
-    // signatures. Note that we need to use `js_name` to ensure we always call
-    // `log` in JS.
     #[wasm_bindgen(js_namespace = console, js_name = log)]
     fn log_u32(a: u32);
 
     #[wasm_bindgen(js_namespace = console, js_name = log)]
     fn log_f64(a: f64);
 
-
-    // Multiple arguments too!
     #[wasm_bindgen(js_namespace = console, js_name = log)]
     fn log_many(a: &str, b: &str);
 }
@@ -524,14 +503,6 @@ fn window() -> web_sys::Window {
   web_sys::window().expect("global `window` should be OK.")
 }
 
-// fn find_canvas() -> &HtmlCanvasElement {
-//   let window = web_sys::window().expect("no global `window` exists");
-//   let document = window.document().expect("should have a document on window");
-//   let el = document.get_element_by_id("board").unwrap();
-
-//   return &el.dyn_into::<HtmlCanvasElement>().unwrap();
-// }
-
 fn request_animation_frame(f: &Closure<dyn FnMut(f64)>) -> i32 {
   window()
     .request_animation_frame(f.as_ref().unchecked_ref())
@@ -547,32 +518,16 @@ fn cancel_animation_frame(id: i32) {
 #[wasm_bindgen]
 pub fn build_board(rows: usize, cols: usize, block_width: u32) -> Tetris {
   set_panic_hook();
-  // let canvas = window()
-  //   .document()
-  //   .unwrap()
-  //   .create_element("canvas")
-  //   .unwrap()
-  //   .dyn_into::<HtmlCanvasElement>()
-  //   .unwrap();
-  // let canvas = find_canvas();
+
   let window = web_sys::window().expect("no global `window` exists");
   let document = window.document().expect("should have a document on window");
   let canvas = document.get_element_by_id("board").unwrap()
     .dyn_into::<HtmlCanvasElement>().unwrap();
 
-  // let canvas = el;
-
   return Tetris::build(&canvas, rows, cols, block_width);
-  // canvas
 }
 
 pub fn set_panic_hook() {
-    // When the `console_error_panic_hook` feature is enabled, we can call the
-    // `set_panic_hook` function at least once during initialization, and then
-    // we will get better error messages if our code ever panics.
-    //
-    // For more details see
-    // https://github.com/rustwasm/console_error_panic_hook#readme
-    #[cfg(feature = "console_error_panic_hook")]
-    console_error_panic_hook::set_once();
+  #[cfg(feature = "console_error_panic_hook")]
+  console_error_panic_hook::set_once();
 }
