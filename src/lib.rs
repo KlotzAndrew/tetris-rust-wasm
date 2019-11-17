@@ -366,7 +366,7 @@ impl Tetris {
     let board = Board::new(rows, cols, block_width);
     let delta = block_width + 1;
     let width = cols as u32 * delta;
-    let height = 60u32 + rows as u32 * delta;
+    let height = rows as u32 * delta;
     let color_blank = JsValue::from_str("white");
     let color_fill = JsValue::from_str("red");
 
@@ -521,8 +521,11 @@ pub fn build_board(rows: usize, cols: usize, block_width: u32) -> Tetris {
 
   let window = web_sys::window().expect("no global `window` exists");
   let document = window.document().expect("should have a document on window");
-  let canvas = document.get_element_by_id("board").unwrap()
-    .dyn_into::<HtmlCanvasElement>().unwrap();
+  let canvas = document
+    .get_element_by_id("board")
+    .unwrap()
+    .dyn_into::<HtmlCanvasElement>()
+    .unwrap();
 
   return Tetris::build(&canvas, rows, cols, block_width);
 }
