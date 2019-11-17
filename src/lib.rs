@@ -2,10 +2,7 @@ extern crate js_sys;
 
 use wasm_bindgen::prelude::*;
 use wasm_bindgen::JsCast;
-use web_sys::{CanvasRenderingContext2d, FocusEvent, HtmlCanvasElement, KeyboardEvent};
-
-use std::cell::RefCell;
-use std::rc::Rc;
+use web_sys::{CanvasRenderingContext2d, HtmlCanvasElement};
 
 #[wasm_bindgen]
 extern {
@@ -232,7 +229,7 @@ fn rand_int(max: usize) -> usize {
 }
 
 fn tetro_random() -> Tetromino {
-  return [I, J, L, O, S, T, Z][rand_int(7)];
+  [I, J, L, O, S, T, Z][rand_int(7)]
 }
 
 #[derive(Debug, Copy, Clone, PartialEq)]
@@ -265,7 +262,7 @@ impl Board {
       cols,
       block_width,
       matrix: vec![vec![Blank; cols]; rows],
-      current_tetro: current_tetro,
+      current_tetro,
       current_x: 4,
       current_y: 0,
       current_rotation: 0,
@@ -281,16 +278,15 @@ impl Board {
       for col in 0..rotated_piece.len() {
         if rotated_piece[row][col] == 0 { continue; }
 
-        let newX = col + x as usize;
-        let newY = row + y as usize;
+        let new_x = col + x as usize;
+        let new_y = row + y as usize;
 
-        if newX < 0 || newX >= self.cols || newY >= self.rows { return true; }
+        if new_x >= self.cols || new_y >= self.rows { return true; }
 
-        if newY < 0 { continue; }
-        if self.matrix[newY][newX] != Blank { return true; }
+        if self.matrix[new_y][new_x] != Blank { return true; }
       }
     }
-    return false;
+    false
   }
 }
 
@@ -323,7 +319,7 @@ impl Board {
       }
 
       if full {
-        for y in (1..row+1).rev() {
+        for y in (1..=row).rev() {
           for col in 0..self.cols {
             self.matrix[y as usize][col as usize] = self.matrix[y as usize -1][col as usize]
           }
@@ -442,7 +438,7 @@ fn next_rotation(v: u32) -> u32 {
   if v + 1 > 3 {
     return 0;
   }
-  return v +1;
+  v +1
 }
 
 #[wasm_bindgen]
@@ -483,7 +479,7 @@ impl Tetris {
     let rotated_piece = vals[self.board.current_rotation as usize];
     if !self.board.collision(self.board.current_x-1, self.board.current_y+1, rotated_piece) {
       log("move_left no collision");
-      self.board.current_x = self.board.current_x -1;
+      self.board.current_x -= 1;
     }
     self.render();
   }
@@ -493,26 +489,10 @@ impl Tetris {
     let vals = tetro_values(self.board.current_tetro);
     let rotated_piece = vals[self.board.current_rotation as usize];
     if !self.board.collision(self.board.current_x+1, self.board.current_y+1, rotated_piece) {
-      self.board.current_x = self.board.current_x+1;
+      self.board.current_x += 1;
       self.render();
     }
   }
-}
-
-fn window() -> web_sys::Window {
-  web_sys::window().expect("global `window` should be OK.")
-}
-
-fn request_animation_frame(f: &Closure<dyn FnMut(f64)>) -> i32 {
-  window()
-    .request_animation_frame(f.as_ref().unchecked_ref())
-    .expect("`requestAnimationFrame` should be OK.")
-}
-
-fn cancel_animation_frame(id: i32) {
-  window()
-    .cancel_animation_frame(id)
-    .expect("`cancelAnimationFrame` should be OK.");
 }
 
 #[wasm_bindgen]
@@ -527,7 +507,7 @@ pub fn build_board(rows: usize, cols: usize, block_width: u32) -> Tetris {
     .dyn_into::<HtmlCanvasElement>()
     .unwrap();
 
-  return Tetris::build(&canvas, rows, cols, block_width);
+  Tetris::build(&canvas, rows, cols, block_width)
 }
 
 pub fn set_panic_hook() {
