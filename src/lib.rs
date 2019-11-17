@@ -417,18 +417,18 @@ impl Tetris {
     let rotated_piece = vals[self.board.current_rotation as usize];
     for row in 0..rotated_piece.len() {
       for col in 0..rotated_piece.len() {
-        if rotated_piece[row][col] != 0 {
-          self.context.set_fill_style(&JsValue::from_str("black"));
-          let x = col as f64 + self.board.current_x as f64;
-          let y = row as f64 + self.board.current_y as f64;
+        if rotated_piece[row][col] == 0 { continue; }
 
-          self.context.fill_rect(
-            x * delta as f64,
-            y * delta as f64,
-            block_width,
-            block_width,
-          );
-        }
+        self.context.set_fill_style(&JsValue::from_str("black"));
+        let x = col as f64 + self.board.current_x as f64;
+        let y = row as f64 + self.board.current_y as f64;
+
+        self.context.fill_rect(
+          x * delta as f64,
+          y * delta as f64,
+          block_width,
+          block_width,
+        );
       }
     }
   }
@@ -477,18 +477,18 @@ impl Tetris {
   pub fn move_left(&mut self) {
     let vals = tetro_values(self.board.current_tetro);
     let rotated_piece = vals[self.board.current_rotation as usize];
-    if !self.board.collision(self.board.current_x-1, self.board.current_y+1, rotated_piece) {
+    if !self.board.collision(self.board.current_x-1, self.board.current_y, rotated_piece) {
       log("move_left no collision");
       self.board.current_x -= 1;
+      self.render();
     }
-    self.render();
   }
 
   pub fn move_right(&mut self) {
     log("move_right...");
     let vals = tetro_values(self.board.current_tetro);
     let rotated_piece = vals[self.board.current_rotation as usize];
-    if !self.board.collision(self.board.current_x+1, self.board.current_y+1, rotated_piece) {
+    if !self.board.collision(self.board.current_x+1, self.board.current_y, rotated_piece) {
       self.board.current_x += 1;
       self.render();
     }
